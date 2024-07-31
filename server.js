@@ -1,23 +1,29 @@
-const express= require("express");
-    const app= express();
-    const addTwoNumber= (n1,n2) => {
-        return n1+n2;
-    }
- 
-    app.get("/addTwoNumber", (req,res)=>{
-        const n1= parseInt(req.query.n1);
-        const n2=parseInt(req.query.n2);
-        const result = addTwoNumber(n1,n2);
-        res.json({statuscocde:200, data: result });
-    });
- 
-    app.get("/", (req, res) => {
-        const n1 = "<html><body><H1>HELLO THERE </H1></body></html>";
-        res.set('Content-Type', 'text/html');
-        res.send(Buffer.from(n1));    
-    })
-    console.log (addTwoNumber(19,12));
-    const port=3045;
-    app.listen(port,()=> {
-        console.log("hello i'm listening to port "+port);
-    })
+const express = require('express');
+const bodyParser = require('body-parser');
+const path = require('path');
+const app = express();
+const port = 3000;
+
+// Middleware to parse JSON and urlencoded data
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Route to serve the HTML file
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Serve static files (e.g., scripts.js, CSS files)
+app.use(express.static(path.join(__dirname)));
+
+// Handle form submission
+app.post('/your-server-endpoint-url', (req, res) => {
+    const { name, email, message } = req.body;
+    console.log(`Received message from ${name} (${email}): ${message}`);
+    // Handle the form data, e.g., save it to a database or send an email
+    res.json({ success: true });
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}/`);
+});
